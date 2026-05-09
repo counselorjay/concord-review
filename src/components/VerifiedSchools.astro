@@ -1,0 +1,58 @@
+---
+// VerifiedSchools.astro
+// Sidebar block listing the 25 schools we can directly verify from Wayback
+// pre-2010 sample-essay HTML pages on tcr.org.
+import metrics from '../../ci-data/concord_metrics.json';
+
+type School = { school: string; count: number; essays?: string[]; source_urls?: string[] };
+const schools: School[] = metrics.verified_schools || [];
+const totalEssays = schools.reduce((a: number, s: School) => a + s.count, 0);
+
+// Build a stable footnote map from the first source_url per school.
+const footnoteUrls: string[] = [];
+const noteIdxFor: number[] = schools.map((s) => {
+  const url = (s.source_urls && s.source_urls[0]) || '';
+  let idx = footnoteUrls.indexOf(url);
+  if (idx === -1) {
+    footnoteUrls.push(url);
+    idx = footnoteUrls.length - 1;
+  }
+  return idx + 1;
+});
+---
+
+<aside id="verified-schools" class="my-12 max-w-3xl mx-auto rounded-xl border border-ink-300 bg-paper p-6 md:p-8">
+  <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">
+    Schools we can verify
+  </p>
+  <h3 class="mt-1 font-display text-xl md:text-2xl font-semibold tracking-tight text-ink-900">
+    Directly attested authors ({totalEssays} essays, {schools.length} schools, 1.82 percent of corpus)
+  </h3>
+  <p class="mt-3 max-w-prose font-serif text-sm text-ink-700 leading-relaxed">
+    These are sample-essay records preserved on Wayback from TCR's pre-2010 site, before the CMS migration removed individual essay pages. The hometown geography supports the elite-and-independent skew at scale; this is the slice we can prove.
+  </p>
+
+  <ul role="list" class="mt-5 grid sm:grid-cols-2 gap-x-6 gap-y-2 font-sans text-sm text-ink-900">
+    {schools.map((s, i) => (
+      <li class="flex items-baseline justify-between gap-3 border-b border-ink-300/60 pb-1.5">
+        <span class="leading-snug">
+          {s.school}
+          <a href={`#vs-fn-${noteIdxFor[i]}`} class="ml-1 text-xs text-accent hover:text-accent-dark align-super no-underline">
+            [{noteIdxFor[i]}]
+          </a>
+        </span>
+        <span class="font-display font-semibold tabular-nums text-ink-700">{s.count}</span>
+      </li>
+    ))}
+  </ul>
+
+  <ol class="mt-6 list-decimal pl-5 space-y-1 font-sans text-xs text-ink-500 break-words">
+    {footnoteUrls.map((url, idx) => (
+      <li id={`vs-fn-${idx + 1}`}>
+        <a href={url} class="hover:text-accent-dark underline" rel="noopener noreferrer" target="_blank">
+          {url}
+        </a>
+      </li>
+    ))}
+  </ol>
+</aside>

@@ -1,0 +1,90 @@
+---
+// GeographyMap.astro
+// Two side-by-side bar lists: top US states (left), top non-USA countries (right).
+import metrics from '../../ci-data/concord_metrics.json';
+
+type StateRow = { state: string; count: number };
+type CountryRow = { country: string; count: number };
+
+const states: StateRow[] = (metrics.hometown_top_states || []).slice(0, 10);
+// Drop USA (silent dominant), drop "California" parsing artifact, then take top 10.
+const allCountries: CountryRow[] = (metrics.hometown_top_countries || [])
+  .filter((c: CountryRow) => c.country !== 'USA' && c.country !== 'California')
+  .slice(0, 10);
+
+const stateMax = states.length ? Math.max(...states.map((s) => s.count)) : 1;
+const countryMax = allCountries.length ? Math.max(...allCountries.map((c) => c.count)) : 1;
+---
+
+<section id="geography-map" class="my-12 max-w-5xl mx-auto">
+  <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+    <!-- US states -->
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">
+        Hometown geography
+      </p>
+      <h3 class="mt-1 font-display text-xl md:text-2xl font-semibold tracking-tight text-ink-900">
+        Where US authors come from
+      </h3>
+      <p class="mt-2 font-serif text-sm text-ink-500">
+        Top 10 US states by published-author hometown.
+      </p>
+      <ul role="list" class="mt-5 space-y-2.5 font-sans text-sm">
+        {states.map((s) => {
+          const pct = (s.count / stateMax) * 100;
+          return (
+            <li class="flex items-center gap-3">
+              <span class="w-10 shrink-0 font-semibold text-ink-900">{s.state}</span>
+              <span class="flex-1 h-5 bg-paper-warm rounded-sm overflow-hidden">
+                <span
+                  class="block h-full bg-navy"
+                  style={`width:${pct.toFixed(1)}%;`}
+                  aria-hidden="true"
+                ></span>
+              </span>
+              <span class="w-12 shrink-0 text-right font-display font-semibold text-ink-900 tabular-nums">
+                {s.count}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+
+    <!-- Countries -->
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">
+        International authors
+      </p>
+      <h3 class="mt-1 font-display text-xl md:text-2xl font-semibold tracking-tight text-ink-900">
+        Top non-US countries
+      </h3>
+      <p class="mt-2 font-serif text-sm text-ink-500">
+        USA dominates the corpus at 1,255 essays and is excluded here so the international tail is legible.
+      </p>
+      <ul role="list" class="mt-5 space-y-2.5 font-sans text-sm">
+        {allCountries.map((c) => {
+          const pct = (c.count / countryMax) * 100;
+          return (
+            <li class="flex items-center gap-3">
+              <span class="w-24 shrink-0 font-semibold text-ink-900 truncate">{c.country}</span>
+              <span class="flex-1 h-5 bg-paper-warm rounded-sm overflow-hidden">
+                <span
+                  class="block h-full bg-accent"
+                  style={`width:${pct.toFixed(1)}%;`}
+                  aria-hidden="true"
+                ></span>
+              </span>
+              <span class="w-12 shrink-0 text-right font-display font-semibold text-ink-900 tabular-nums">
+                {c.count}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <p class="mt-4 max-w-prose font-serif text-xs italic text-ink-500 leading-relaxed">
+        Note: a "California" entry at count 7 in the source data is a parsing artifact, not a country (records that spelled out the state name instead of using the postal code), and has been excluded from this list. Those essays belong inside the USA total.
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,48 @@
+---
+// ReadinessChecklist.astro
+// Six readiness rows mined verbatim from the brief's Section 7 (Coach's Note),
+// paragraph 2: "A TCR-ready HS student looks like this in practice..."
+const items = [
+  "Read at least two TCR issues cover to cover, and can name a published essay whose argumentative move they admire.",
+  "Already comfortable with primary sources (ProQuest Historical Newspapers, the National Archives, the Library of Congress).",
+  "Has completed at least one prior 4,000-word researched paper.",
+  "Can hold a 6,000-word argument without thesis drift around word 3,500.",
+  "Has a teacher or counselor who can read drafts at register, not at \"this is good for a high schooler.\"",
+  "Has fourteen weeks at ten to fifteen hours a week, on top of school, without that schedule wrecking junior fall.",
+];
+---
+
+<aside
+  id="readiness-checklist"
+  class="my-12 rounded-xl border border-ink-300 bg-paper-warm/60 p-6 md:p-8 max-w-3xl mx-auto"
+  aria-labelledby="readiness-checklist-heading"
+>
+  <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">
+    TCR-ready check
+  </p>
+  <h2
+    id="readiness-checklist-heading"
+    class="mt-2 font-display text-2xl md:text-3xl font-semibold tracking-tight text-ink-900"
+  >
+    Six signs a student is ready this cycle
+  </h2>
+  <p class="mt-3 max-w-prose font-serif text-ink-700 leading-relaxed">
+    Pulled directly from the Coach's Note. If a student can answer yes to all six, this is the cycle. If they cannot, it is usually worth waiting.
+  </p>
+
+  <ul role="list" class="mt-6 space-y-4 font-serif text-ink-900">
+    {items.map((text) => (
+      <li class="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          class="mt-1 inline-flex shrink-0 h-5 w-5 items-center justify-center rounded-sm border border-accent/60 bg-paper text-accent"
+        >
+          <svg viewBox="0 0 16 16" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8.5l3.2 3.2L13 5" />
+          </svg>
+        </span>
+        <span class="leading-relaxed text-base">{text}</span>
+      </li>
+    ))}
+  </ul>
+</aside>

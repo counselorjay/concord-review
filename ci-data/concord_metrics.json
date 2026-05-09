@@ -1,6 +1,1250 @@
 {
-  "_status": "placeholder pending Margot Phase 3 synthesis",
-  "snapshot_date": "2026-05-09",
-  "essays_indexed": 0,
-  "year_range": [1987, 2025]
+  "_generated_at_utc": "2026-05-09T21:11:58.791510+00:00",
+  "corpus": {
+    "essays_total": 1597,
+    "issues_total": 142,
+    "year_range": [
+      1988,
+      2025
+    ],
+    "vol_range": [
+      1,
+      36
+    ]
+  },
+  "era_distribution": [
+    {
+      "era": "20thCentury_pre1945",
+      "count": 554
+    },
+    {
+      "era": "19thCentury",
+      "count": 391
+    },
+    {
+      "era": "20thCentury_post1945",
+      "count": 319
+    },
+    {
+      "era": "EarlyModern",
+      "count": 87
+    },
+    {
+      "era": "Medieval",
+      "count": 47
+    },
+    {
+      "era": "18thCentury",
+      "count": 46
+    },
+    {
+      "era": "Unknown",
+      "count": 44
+    },
+    {
+      "era": "MultiEra",
+      "count": 36
+    },
+    {
+      "era": "Ancient",
+      "count": 30
+    },
+    {
+      "era": "Classical",
+      "count": 29
+    },
+    {
+      "era": "21stCentury",
+      "count": 14
+    }
+  ],
+  "region_distribution": [
+    {
+      "region": "NorthAmerica",
+      "count": 683
+    },
+    {
+      "region": "Europe",
+      "count": 351
+    },
+    {
+      "region": "EastAsia",
+      "count": 160
+    },
+    {
+      "region": "MiddleEast",
+      "count": 68
+    },
+    {
+      "region": "Global",
+      "count": 59
+    },
+    {
+      "region": "Russia_Eurasia",
+      "count": 54
+    },
+    {
+      "region": "MultiRegion",
+      "count": 48
+    },
+    {
+      "region": "Africa",
+      "count": 41
+    },
+    {
+      "region": "SouthAsia",
+      "count": 37
+    },
+    {
+      "region": "LatinAmerica",
+      "count": 34
+    },
+    {
+      "region": "Unknown",
+      "count": 30
+    },
+    {
+      "region": "SoutheastAsia",
+      "count": 23
+    },
+    {
+      "region": "Oceania",
+      "count": 9
+    }
+  ],
+  "topic_distribution": [
+    {
+      "topic": "Politics_Government",
+      "count": 440
+    },
+    {
+      "topic": "Social_Cultural",
+      "count": 295
+    },
+    {
+      "topic": "Military_War",
+      "count": 241
+    },
+    {
+      "topic": "Economics_Business",
+      "count": 104
+    },
+    {
+      "topic": "Diplomatic_International",
+      "count": 103
+    },
+    {
+      "topic": "Race_Ethnicity",
+      "count": 102
+    },
+    {
+      "topic": "Intellectual_Religious",
+      "count": 81
+    },
+    {
+      "topic": "Legal_Constitutional",
+      "count": 72
+    },
+    {
+      "topic": "Science_Technology",
+      "count": 61
+    },
+    {
+      "topic": "Gender",
+      "count": 31
+    },
+    {
+      "topic": "Labor",
+      "count": 24
+    },
+    {
+      "topic": "Unknown",
+      "count": 22
+    },
+    {
+      "topic": "Environmental",
+      "count": 18
+    },
+    {
+      "topic": "Other_Humanities",
+      "count": 3
+    }
+  ],
+  "topic_by_era_heatmap": [
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Politics_Government",
+      "count": 151
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Military_War",
+      "count": 118
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Politics_Government",
+      "count": 102
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Politics_Government",
+      "count": 95
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Social_Cultural",
+      "count": 95
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Social_Cultural",
+      "count": 82
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Diplomatic_International",
+      "count": 52
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Military_War",
+      "count": 51
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Social_Cultural",
+      "count": 49
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Race_Ethnicity",
+      "count": 43
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Race_Ethnicity",
+      "count": 41
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Diplomatic_International",
+      "count": 31
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Military_War",
+      "count": 31
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Economics_Business",
+      "count": 29
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Economics_Business",
+      "count": 28
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Economics_Business",
+      "count": 25
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Politics_Government",
+      "count": 21
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Legal_Constitutional",
+      "count": 20
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Intellectual_Religious",
+      "count": 19
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Legal_Constitutional",
+      "count": 18
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Legal_Constitutional",
+      "count": 18
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Politics_Government",
+      "count": 18
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Social_Cultural",
+      "count": 17
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Science_Technology",
+      "count": 17
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Race_Ethnicity",
+      "count": 15
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Science_Technology",
+      "count": 15
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Military_War",
+      "count": 14
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Science_Technology",
+      "count": 14
+    },
+    {
+      "era": "Classical",
+      "topic": "Politics_Government",
+      "count": 14
+    },
+    {
+      "era": "Medieval",
+      "topic": "Politics_Government",
+      "count": 14
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Labor",
+      "count": 13
+    },
+    {
+      "era": "Unknown",
+      "topic": "Social_Cultural",
+      "count": 12
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Diplomatic_International",
+      "count": 12
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Intellectual_Religious",
+      "count": 12
+    },
+    {
+      "era": "Medieval",
+      "topic": "Social_Cultural",
+      "count": 11
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Environmental",
+      "count": 11
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Social_Cultural",
+      "count": 11
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Gender",
+      "count": 10
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Gender",
+      "count": 10
+    },
+    {
+      "era": "Ancient",
+      "topic": "Politics_Government",
+      "count": 10
+    },
+    {
+      "era": "Medieval",
+      "topic": "Military_War",
+      "count": 10
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Labor",
+      "count": 9
+    },
+    {
+      "era": "Ancient",
+      "topic": "Intellectual_Religious",
+      "count": 9
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Intellectual_Religious",
+      "count": 9
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Economics_Business",
+      "count": 9
+    },
+    {
+      "era": "Medieval",
+      "topic": "Intellectual_Religious",
+      "count": 8
+    },
+    {
+      "era": "Unknown",
+      "topic": "Politics_Government",
+      "count": 8
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Gender",
+      "count": 8
+    },
+    {
+      "era": "Unknown",
+      "topic": "Unknown",
+      "count": 7
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Economics_Business",
+      "count": 7
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Intellectual_Religious",
+      "count": 6
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Intellectual_Religious",
+      "count": 6
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Intellectual_Religious",
+      "count": 6
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Politics_Government",
+      "count": 6
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Military_War",
+      "count": 6
+    },
+    {
+      "era": "Classical",
+      "topic": "Social_Cultural",
+      "count": 5
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Science_Technology",
+      "count": 5
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Social_Cultural",
+      "count": 5
+    },
+    {
+      "era": "Ancient",
+      "topic": "Social_Cultural",
+      "count": 5
+    },
+    {
+      "era": "Classical",
+      "topic": "Military_War",
+      "count": 5
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Legal_Constitutional",
+      "count": 4
+    },
+    {
+      "era": "Unknown",
+      "topic": "Legal_Constitutional",
+      "count": 4
+    },
+    {
+      "era": "Classical",
+      "topic": "Intellectual_Religious",
+      "count": 4
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Environmental",
+      "count": 4
+    },
+    {
+      "era": "Ancient",
+      "topic": "Military_War",
+      "count": 4
+    },
+    {
+      "era": "Unknown",
+      "topic": "Environmental",
+      "count": 3
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Unknown",
+      "count": 3
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Unknown",
+      "count": 3
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Unknown",
+      "count": 3
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Science_Technology",
+      "count": 3
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Race_Ethnicity",
+      "count": 3
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Social_Cultural",
+      "count": 3
+    },
+    {
+      "era": "20thCentury_pre1945",
+      "topic": "Unknown",
+      "count": 3
+    },
+    {
+      "era": "Unknown",
+      "topic": "Economics_Business",
+      "count": 3
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Diplomatic_International",
+      "count": 3
+    },
+    {
+      "era": "EarlyModern",
+      "topic": "Legal_Constitutional",
+      "count": 3
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Legal_Constitutional",
+      "count": 2
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Legal_Constitutional",
+      "count": 2
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Labor",
+      "count": 2
+    },
+    {
+      "era": "Unknown",
+      "topic": "Science_Technology",
+      "count": 2
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Gender",
+      "count": 2
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Diplomatic_International",
+      "count": 2
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Economics_Business",
+      "count": 2
+    },
+    {
+      "era": "Ancient",
+      "topic": "Unknown",
+      "count": 1
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Diplomatic_International",
+      "count": 1
+    },
+    {
+      "era": "Unknown",
+      "topic": "Intellectual_Religious",
+      "count": 1
+    },
+    {
+      "era": "Unknown",
+      "topic": "Military_War",
+      "count": 1
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Unknown",
+      "count": 1
+    },
+    {
+      "era": "Unknown",
+      "topic": "Diplomatic_International",
+      "count": 1
+    },
+    {
+      "era": "Classical",
+      "topic": "Science_Technology",
+      "count": 1
+    },
+    {
+      "era": "Medieval",
+      "topic": "Legal_Constitutional",
+      "count": 1
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Economics_Business",
+      "count": 1
+    },
+    {
+      "era": "Medieval",
+      "topic": "Science_Technology",
+      "count": 1
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Intellectual_Religious",
+      "count": 1
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Politics_Government",
+      "count": 1
+    },
+    {
+      "era": "Medieval",
+      "topic": "Unknown",
+      "count": 1
+    },
+    {
+      "era": "Unknown",
+      "topic": "Other_Humanities",
+      "count": 1
+    },
+    {
+      "era": "Unknown",
+      "topic": "Gender",
+      "count": 1
+    },
+    {
+      "era": "Medieval",
+      "topic": "Diplomatic_International",
+      "count": 1
+    },
+    {
+      "era": "Ancient",
+      "topic": "Science_Technology",
+      "count": 1
+    },
+    {
+      "era": "21stCentury",
+      "topic": "Science_Technology",
+      "count": 1
+    },
+    {
+      "era": "19thCentury",
+      "topic": "Other_Humanities",
+      "count": 1
+    },
+    {
+      "era": "20thCentury_post1945",
+      "topic": "Other_Humanities",
+      "count": 1
+    },
+    {
+      "era": "18thCentury",
+      "topic": "Science_Technology",
+      "count": 1
+    },
+    {
+      "era": "MultiEra",
+      "topic": "Military_War",
+      "count": 1
+    }
+  ],
+  "methodology_distribution": [
+    {
+      "methodology": "Thematic",
+      "count": 641
+    },
+    {
+      "methodology": "Event_Narrative",
+      "count": 529
+    },
+    {
+      "methodology": "Biographical",
+      "count": 319
+    },
+    {
+      "methodology": "Comparative",
+      "count": 47
+    },
+    {
+      "methodology": "Local_Microhistory",
+      "count": 34
+    },
+    {
+      "methodology": "Unclear",
+      "count": 25
+    },
+    {
+      "methodology": "Historiographical",
+      "count": 2
+    }
+  ],
+  "year_distribution": [
+    {
+      "year": 1988,
+      "count": 22
+    },
+    {
+      "year": 1989,
+      "count": 44
+    },
+    {
+      "year": 1990,
+      "count": 44
+    },
+    {
+      "year": 1991,
+      "count": 33
+    },
+    {
+      "year": 1992,
+      "count": 22
+    },
+    {
+      "year": 1993,
+      "count": 44
+    },
+    {
+      "year": 1994,
+      "count": 44
+    },
+    {
+      "year": 1995,
+      "count": 22
+    },
+    {
+      "year": 1996,
+      "count": 22
+    },
+    {
+      "year": 1997,
+      "count": 44
+    },
+    {
+      "year": 1998,
+      "count": 44
+    },
+    {
+      "year": 1999,
+      "count": 44
+    },
+    {
+      "year": 2000,
+      "count": 44
+    },
+    {
+      "year": 2001,
+      "count": 44
+    },
+    {
+      "year": 2002,
+      "count": 44
+    },
+    {
+      "year": 2003,
+      "count": 44
+    },
+    {
+      "year": 2004,
+      "count": 44
+    },
+    {
+      "year": 2005,
+      "count": 44
+    },
+    {
+      "year": 2006,
+      "count": 44
+    },
+    {
+      "year": 2007,
+      "count": 43
+    },
+    {
+      "year": 2008,
+      "count": 44
+    },
+    {
+      "year": 2009,
+      "count": 44
+    },
+    {
+      "year": 2010,
+      "count": 44
+    },
+    {
+      "year": 2011,
+      "count": 44
+    },
+    {
+      "year": 2012,
+      "count": 44
+    },
+    {
+      "year": 2013,
+      "count": 44
+    },
+    {
+      "year": 2014,
+      "count": 44
+    },
+    {
+      "year": 2015,
+      "count": 42
+    },
+    {
+      "year": 2016,
+      "count": 41
+    },
+    {
+      "year": 2017,
+      "count": 43
+    },
+    {
+      "year": 2018,
+      "count": 75
+    },
+    {
+      "year": 2019,
+      "count": 47
+    },
+    {
+      "year": 2020,
+      "count": 41
+    },
+    {
+      "year": 2021,
+      "count": 44
+    },
+    {
+      "year": 2022,
+      "count": 44
+    },
+    {
+      "year": 2023,
+      "count": 44
+    },
+    {
+      "year": 2024,
+      "count": 44
+    },
+    {
+      "year": 2025,
+      "count": 44
+    }
+  ],
+  "hometown_top_states": [
+    {
+      "state": "NY",
+      "count": 196
+    },
+    {
+      "state": "MA",
+      "count": 191
+    },
+    {
+      "state": "CA",
+      "count": 143
+    },
+    {
+      "state": "CT",
+      "count": 68
+    },
+    {
+      "state": "NJ",
+      "count": 64
+    },
+    {
+      "state": "DC",
+      "count": 64
+    },
+    {
+      "state": "IL",
+      "count": 48
+    },
+    {
+      "state": "MD",
+      "count": 47
+    },
+    {
+      "state": "PA",
+      "count": 42
+    },
+    {
+      "state": "TX",
+      "count": 37
+    },
+    {
+      "state": "OH",
+      "count": 26
+    },
+    {
+      "state": "FL",
+      "count": 26
+    },
+    {
+      "state": "TN",
+      "count": 25
+    },
+    {
+      "state": "NH",
+      "count": 24
+    },
+    {
+      "state": "NC",
+      "count": 22
+    }
+  ],
+  "hometown_top_countries": [
+    {
+      "country": "USA",
+      "count": 1255
+    },
+    {
+      "country": "Canada",
+      "count": 77
+    },
+    {
+      "country": "China",
+      "count": 31
+    },
+    {
+      "country": "Singapore",
+      "count": 24
+    },
+    {
+      "country": "Hong Kong",
+      "count": 12
+    },
+    {
+      "country": "Korea",
+      "count": 12
+    },
+    {
+      "country": "Australia",
+      "count": 11
+    },
+    {
+      "country": "India",
+      "count": 9
+    },
+    {
+      "country": "South Korea",
+      "count": 7
+    },
+    {
+      "country": "California",
+      "count": 7
+    }
+  ],
+  "verified_schools": [
+    {
+      "school": "Mountain Lakes High School",
+      "count": 2,
+      "essays": [
+        "fall-1988-05",
+        "summer-1993-01"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040627080522/https://tcr.org/advpl_5.html"
+      ]
+    },
+    {
+      "school": "Washington International School",
+      "count": 2,
+      "essays": [
+        "fall-1989-02",
+        "special-ib-fall-1991-03"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040605015758/https://tcr.org/dissent.html"
+      ]
+    },
+    {
+      "school": "Sidwell Friends School",
+      "count": 2,
+      "essays": [
+        "fall-1997-09",
+        "spring-1998-09"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040619080558/https://tcr.org/chinatown.html"
+      ]
+    },
+    {
+      "school": "Phillips Academy",
+      "count": 2,
+      "essays": [
+        "fall-1998-01",
+        "spring-1999-08"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040217131811/https://tcr.org/abigailadams.html",
+        "https://web.archive.org/web/20040604170006/https://tcr.org/goldwater.html"
+      ]
+    },
+    {
+      "school": "The Frisch School",
+      "count": 1,
+      "essays": [
+        "winter-1990-06"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040622085339/https://tcr.org/circusfire.html"
+      ]
+    },
+    {
+      "school": "Theodore Roosevelt High School",
+      "count": 1,
+      "essays": [
+        "spring-1991-07"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040605015403/https://tcr.org/advpl_4.html"
+      ]
+    },
+    {
+      "school": "Homewood-Flossmoor Community High School",
+      "count": 1,
+      "essays": [
+        "spring-1991-09"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040616190340/https://tcr.org/advpl_1.html"
+      ]
+    },
+    {
+      "school": "St. John's School",
+      "count": 1,
+      "essays": [
+        "winter-1992-06"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040604050642/https://tcr.org/advpl_9.html"
+      ]
+    },
+    {
+      "school": "Vivian Webb School",
+      "count": 1,
+      "essays": [
+        "winter-1992-09"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040626090248/https://tcr.org/advpl_6.html"
+      ]
+    },
+    {
+      "school": "Mt. Rainier High School",
+      "count": 1,
+      "essays": [
+        "summer-1993-11"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040604195017/https://tcr.org/constantine.html"
+      ]
+    },
+    {
+      "school": "Boulder High School",
+      "count": 1,
+      "essays": [
+        "fall-1994-05"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040604045514/https://tcr.org/advpl_7.html"
+      ]
+    },
+    {
+      "school": "Lakeridge High School",
+      "count": 1,
+      "essays": [
+        "fall-1994-07"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040724152304/https://tcr.org/advpl_10.html"
+      ]
+    },
+    {
+      "school": "Hall High School",
+      "count": 1,
+      "essays": [
+        "winter-1994-06"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040405201325/https://tcr.org/advpl_8.html"
+      ]
+    },
+    {
+      "school": "Greens Farms Academy",
+      "count": 1,
+      "essays": [
+        "winter-1994-11"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040604210520/https://tcr.org/advpl_2.html"
+      ]
+    },
+    {
+      "school": "Buckingham Browne & Nichols School",
+      "count": 1,
+      "essays": [
+        "summer-1994-09"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040619075559/https://tcr.org/advpl_3.html"
+      ]
+    },
+    {
+      "school": "Dalton School",
+      "count": 1,
+      "essays": [
+        "spring-1995-08"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040701082306/https://tcr.org/advpl_11.html"
+      ]
+    },
+    {
+      "school": "Hillsborough High School",
+      "count": 1,
+      "essays": [
+        "fall-1996-08"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040608221055/https://tcr.org/EPMar97.html"
+      ]
+    },
+    {
+      "school": "St. Maur International School",
+      "count": 1,
+      "essays": [
+        "fall-1996-10"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040608221055/https://tcr.org/EPMar97.html"
+      ]
+    },
+    {
+      "school": "Lake Forest High School",
+      "count": 1,
+      "essays": [
+        "fall-1996-11"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040608221055/https://tcr.org/EPMar97.html"
+      ]
+    },
+    {
+      "school": "United World College of the Atlantic",
+      "count": 1,
+      "essays": [
+        "winter-1996-01"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20030523191936/https://tcr.org/czech.html"
+      ]
+    },
+    {
+      "school": "Li Po Chun United World College of Hong Kong",
+      "count": 1,
+      "essays": [
+        "fall-1997-04"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040113195508/https://tcr.org/chinesedemocracy.html"
+      ]
+    },
+    {
+      "school": "East Hampton High School",
+      "count": 1,
+      "essays": [
+        "fall-1997-11"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040619112515/https://tcr.org/GentileGinger.html"
+      ]
+    },
+    {
+      "school": "Polytechnic High School",
+      "count": 1,
+      "essays": [
+        "summer-1998-01"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040618112933/https://tcr.org/cherokees.html"
+      ]
+    },
+    {
+      "school": "Hunter College High School",
+      "count": 1,
+      "essays": [
+        "fall-1999-09"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20011223060641/https://tcr.org/ERAmendment.html"
+      ]
+    },
+    {
+      "school": "Burlington High School",
+      "count": 1,
+      "essays": [
+        "winter-1999-05"
+      ],
+      "source_urls": [
+        "https://web.archive.org/web/20040513223206/https://tcr.org/Bentham.html"
+      ]
+    }
+  ],
+  "coverage_caveats": {
+    "school_enrichment_pct": 1.82,
+    "school_enrichment_method": "Wayback pre-2010 sample-essay HTML pages on tcr.org",
+    "classification_unknown_pct": 3.69
+  }
 }

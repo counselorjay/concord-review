@@ -1,0 +1,122 @@
+---
+// TopicEraHeatmap.astro
+// 5x5 grid of top eras vs top topics from metrics.topic_by_era_heatmap.
+import metrics from '../../ci-data/concord_metrics.json';
+
+type Cell = { era: string; topic: string; count: number };
+const raw: Cell[] = metrics.topic_by_era_heatmap || [];
+
+// Era display order and label normalization (top 5).
+const eraOrder = [
+  '20thCentury_pre1945',
+  '19thCentury',
+  '20thCentury_post1945',
+  'EarlyModern',
+  'Medieval',
+];
+const eraLabels: Record<string, string> = {
+  '20thCentury_pre1945': '20th C, pre-1945',
+  '19thCentury': '19th Century',
+  '20thCentury_post1945': '20th C, post-1945',
+  'EarlyModern': 'Early Modern',
+  'Medieval': 'Medieval',
+};
+
+// Topic display order (top 5).
+const topicOrder = [
+  'Politics_Government',
+  'Social_Cultural',
+  'Military_War',
+  'Economics_Business',
+  'Diplomatic_International',
+];
+const topicLabels: Record<string, string> = {
+  'Politics_Government': 'Politics',
+  'Social_Cultural': 'Social',
+  'Military_War': 'Military',
+  'Economics_Business': 'Economics',
+  'Diplomatic_International': 'Diplomatic',
+};
+
+// Build a lookup table.
+const lookup = new Map<string, number>();
+for (const c of raw) lookup.set(`${c.era}|${c.topic}`, c.count);
+
+// Compute max count for color scaling.
+let maxCount = 0;
+for (const era of eraOrder) {
+  for (const topic of topicOrder) {
+    const v = lookup.get(`${era}|${topic}`) || 0;
+    if (v > maxCount) maxCount = v;
+  }
+}
+if (maxCount === 0) maxCount = 1;
+
+// Color scale: HSL navy hue (220), lightness 92% (low) to 26% (high).
+function cellStyle(count: number) {
+  const ratio = count / maxCount;
+  const lightness = 92 - ratio * 66; // 92 -> 26
+  const dark = lightness < 55;
+  return {
+    background: `hsl(220, 38%, ${lightness.toFixed(1)}%)`,
+    color: dark ? '#fbf7ef' : '#10182a',
+  };
+}
+---
+
+<figure id="topic-era-heatmap" class="my-12 max-w-4xl mx-auto">
+  <figcaption class="mb-4">
+    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">
+      Topic by era
+    </p>
+    <h3 class="mt-1 font-display text-xl md:text-2xl font-semibold tracking-tight text-ink-900">
+      Where the corpus actually concentrates
+    </h3>
+  </figcaption>
+
+  <div class="overflow-x-auto">
+    <table class="w-full border-separate border-spacing-1 font-sans text-sm">
+      <thead>
+        <tr>
+          <th class="text-left text-xs font-semibold uppercase tracking-wider text-ink-500 pb-2">
+            <span class="sr-only">Era</span>
+          </th>
+          {topicOrder.map((t) => (
+            <th class="text-center text-xs font-semibold uppercase tracking-wider text-ink-500 pb-2 px-1">
+              {topicLabels[t]}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {eraOrder.map((era) => (
+          <tr>
+            <th
+              scope="row"
+              class="text-right text-xs font-semibold text-ink-700 pr-3 align-middle whitespace-nowrap"
+            >
+              {eraLabels[era]}
+            </th>
+            {topicOrder.map((topic) => {
+              const count = lookup.get(`${era}|${topic}`) || 0;
+              const s = cellStyle(count);
+              return (
+                <td
+                  class="rounded-md text-center font-display font-semibold text-base md:text-lg py-3 md:py-4 transition-colors"
+                  style={`background:${s.background};color:${s.color};`}
+                  title={`${eraLabels[era]} x ${topicLabels[topic]}: ${count} essays`}
+                >
+                  {count > 0 ? count : ''}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-5 max-w-prose font-serif text-ink-700 italic leading-relaxed">
+    The dominant cells sit on the 20th-century pre-1945 row. Politics and Military and War in that era together account for 269 essays, roughly 17 percent of the entire corpus. That is consistent with the WWI / WWII document base accessible to a HS researcher (statutes, congressional hearings, ProQuest Historical Newspapers coverage, government archives), which is more available than primary material from earlier or non-Western periods.
+  </p>
+</figure>
