@@ -1,0 +1,38 @@
+{
+  "_status": "placeholder pending Margot Phase 3 synthesis",
+  "generated_at": "2026-05-09T00:00:00.000Z",
+  "corpus_total": 0,
+  "topic_distribution_pct": {
+    "us_political": 0,
+    "us_social": 0,
+    "us_economic": 0,
+    "european": 0,
+    "asian": 0,
+    "world_other": 0,
+    "intellectual_history": 0,
+    "military": 0,
+    "other": 0
+  },
+  "topic_examples": {
+    "us_political": { "label": "US political history", "count": 0, "examples": [] },
+    "us_social": { "label": "US social history", "count": 0, "examples": [] },
+    "us_economic": { "label": "US economic history", "count": 0, "examples": [] },
+    "european": { "label": "European history", "count": 0, "examples": [] },
+    "asian": { "label": "Asian history", "count": 0, "examples": [] },
+    "world_other": { "label": "World, other regions", "count": 0, "examples": [] },
+    "intellectual_history": { "label": "Intellectual history", "count": 0, "examples": [] },
+    "military": { "label": "Military history", "count": 0, "examples": [] },
+    "other": { "label": "Other", "count": 0, "examples": [] }
+  },
+  "geography": {
+    "us_pct": 0,
+    "non_us_pct": 0,
+    "unknown_pct": 0,
+    "us_papers_count": 0,
+    "us_papers_with_state_inferred_count": 0,
+    "us_papers_state_unknown_count": 0,
+    "top_us_states": [],
+    "top_us_states_note": "Placeholder pending Phase 3 synthesis.",
+    "top_non_us_countries": []
+  }
+}

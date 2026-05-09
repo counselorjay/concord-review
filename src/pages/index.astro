@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import metrics from '../../ci-data/concord_metrics.json';
+
+const m = metrics;
+const yearLow = m.year_range?.[0] ?? 1987;
+const yearHigh = m.year_range?.[1] ?? 2025;
+---
+<BaseLayout>
+  <!-- Hero -->
+  <section class="border-b border-ink-300/60">
+    <div class="mx-auto max-w-5xl px-6 py-16 md:py-24">
+      <p class="text-xs uppercase tracking-[0.25em] text-accent font-sans font-semibold">Counselor intelligence brief</p>
+      <h1 class="mt-4 font-display text-4xl md:text-6xl font-semibold tracking-tight text-ink-900">
+        The Concord Review
+      </h1>
+      <p class="mt-2 font-display italic text-xl md:text-2xl text-ink-500">
+        A peer-reviewed quarterly for secondary-school history essays.
+      </p>
+      <p class="mt-6 font-serif text-lg text-ink-700 max-w-prose leading-relaxed">
+        Counselor Jay's intelligence brief on The Concord Review as a publication path for high school students writing serious historical research. What it is, who it suits, what gets published, and how to submit. Corpus indexing is in progress; the full brief lands here when synthesis completes.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3 text-sm font-sans">
+        <a href="#status" class="inline-flex items-center rounded-md bg-accent px-5 py-2.5 text-white hover:bg-accent-dark">See status</a>
+        <a href="#about" class="inline-flex items-center rounded-md border border-accent text-accent-dark px-5 py-2.5 hover:bg-accent-soft">About this brief</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+    <h2 class="font-display text-2xl md:text-3xl font-semibold tracking-tight">About this brief</h2>
+    <div class="mt-5 max-w-prose space-y-4 font-serif text-ink-700 leading-relaxed">
+      <p>
+        The Concord Review, founded in 1987, is the only quarterly journal in the world to publish the academic history research papers of secondary students. Its archive spans nearly four decades of student scholarship in US, European, Asian, and world history.
+      </p>
+      <p>
+        This site is a counselor-facing companion: an independent reading of the published archive, structured to help counselors and students decide whether The Concord Review is the right venue for a given history project, and what kind of essay actually gets published.
+      </p>
+      <p>
+        Phase 3 corpus synthesis is underway. When complete, this page will publish topic distribution, geography, structural norms (length, sources, footnote density), and a submission roadmap, all derived from a public-archive corpus of essays from {yearLow} to {yearHigh}.
+      </p>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <section id="status" class="bg-paper-warm/60 border-y border-ink-300/60">
+    <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+      <h2 class="font-display text-2xl md:text-3xl font-semibold tracking-tight">Status</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-5 font-sans">
+        <div class="rounded-lg border border-ink-300 bg-paper p-5">
+          <p class="text-xs uppercase tracking-wider text-ink-500">Snapshot</p>
+          <p class="mt-1 text-2xl font-display font-semibold text-ink-900">{m.snapshot_date}</p>
+          <p class="mt-1 text-sm text-ink-500">Placeholder build</p>
+        </div>
+        <div class="rounded-lg border border-ink-300 bg-paper p-5">
+          <p class="text-xs uppercase tracking-wider text-ink-500">Essays indexed</p>
+          <p class="mt-1 text-2xl font-display font-semibold text-ink-900">{m.essays_indexed}</p>
+          <p class="mt-1 text-sm text-ink-500">Pending Phase 3 synthesis</p>
+        </div>
+        <div class="rounded-lg border border-ink-300 bg-paper p-5">
+          <p class="text-xs uppercase tracking-wider text-ink-500">Archive range</p>
+          <p class="mt-1 text-2xl font-display font-semibold text-ink-900">{yearLow} to {yearHigh}</p>
+          <p class="mt-1 text-sm text-ink-500">Public archive coverage target</p>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-lg border border-warn/40 bg-warn-soft p-5 text-sm font-serif text-ink-700 max-w-prose">
+        <p class="font-sans font-semibold text-warn">Coming soon, corpus indexing in progress.</p>
+        <p class="mt-2">
+          The widgets below are scaffolded with empty data and will populate once the corpus synthesis pass lands. Topic mix, geography, and an eligibility check are the first three planned components.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Widget shells (placeholders) -->
+  <section class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+    <h2 class="font-display text-2xl md:text-3xl font-semibold tracking-tight">Coming widgets</h2>
+    <p class="mt-3 max-w-prose font-serif text-ink-700">
+      These placeholder cards stand in for the live widgets that will publish with Phase 3.
+    </p>
+
+    <div class="mt-8 grid md:grid-cols-3 gap-5 font-sans">
+      <div class="rounded-xl border border-ink-300 bg-paper p-6">
+        <p class="text-xs uppercase tracking-wider text-accent font-semibold">Eligibility</p>
+        <h3 class="mt-2 font-display text-lg font-semibold text-ink-900">Quick eligibility check</h3>
+        <p class="mt-2 text-sm text-ink-500">
+          A short interactive funnel: secondary-school student, history project, sole authorship, length window. Helps a counselor decide in under a minute whether The Concord Review is a candidate venue.
+        </p>
+      </div>
+      <div class="rounded-xl border border-ink-300 bg-paper p-6">
+        <p class="text-xs uppercase tracking-wider text-accent font-semibold">Topic mix</p>
+        <h3 class="mt-2 font-display text-lg font-semibold text-ink-900">What the archive actually publishes</h3>
+        <p class="mt-2 text-sm text-ink-500">
+          A donut of US, European, Asian, world, intellectual, and military history shares across the public archive, with representative essay titles per slice.
+        </p>
+      </div>
+      <div class="rounded-xl border border-ink-300 bg-paper p-6">
+        <p class="text-xs uppercase tracking-wider text-accent font-semibold">Geography</p>
+        <h3 class="mt-2 font-display text-lg font-semibold text-ink-900">Where published authors are based</h3>
+        <p class="mt-2 text-sm text-ink-500">
+          A US-state heatmap and a top non-US countries panel, derived from school affiliations on the public archive.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
