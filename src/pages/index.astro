@@ -1,10 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import metrics from '../../ci-data/concord_metrics.json';
-import ReadinessChecklist from '../components/ReadinessChecklist.astro';
-import TopicEraHeatmap from '../components/TopicEraHeatmap.astro';
-import GeographyMap from '../components/GeographyMap.astro';
-import VerifiedSchools from '../components/VerifiedSchools.astro';
+import examplesData from '../../ci-data/example_essays.json';
 
 const corpus = metrics.corpus || { essays_total: 1597, issues_total: 142, year_range: [1988, 2025] };
 const essaysTotal = corpus.essays_total ?? 1597;
@@ -12,295 +9,455 @@ const issuesTotal = corpus.issues_total ?? 142;
 const yearLow = corpus.year_range?.[0] ?? 1988;
 const yearHigh = corpus.year_range?.[1] ?? 2025;
 
-const proseClass = 'max-w-prose space-y-5 font-serif text-lg leading-relaxed text-ink-700';
-const h2Class = 'font-display text-3xl md:text-4xl font-semibold tracking-tight text-ink-900';
-const h3Class = 'font-display text-xl md:text-2xl font-semibold tracking-tight text-ink-900';
-const sectionWrap = 'mx-auto max-w-5xl px-6 py-14 md:py-20';
+// ---------------- Heatmap ---------------- //
+type HeatCell = { era: string; topic: string; count: number };
+const heatRaw: HeatCell[] = metrics.topic_by_era_heatmap || [];
+const eraOrder = ['20thCentury_pre1945', '19thCentury', '20thCentury_post1945', 'EarlyModern', 'Medieval'];
+const eraLabels: Record<string, string> = {
+  '20thCentury_pre1945': '20th C, pre-1945',
+  '19thCentury': '19th Century',
+  '20thCentury_post1945': '20th C, post-1945',
+  'EarlyModern': 'Early Modern',
+  'Medieval': 'Medieval',
+};
+const topicOrder = ['Politics_Government', 'Social_Cultural', 'Military_War', 'Economics_Business', 'Diplomatic_International'];
+const topicLabels: Record<string, string> = {
+  'Politics_Government': 'Politics',
+  'Social_Cultural': 'Social',
+  'Military_War': 'Military',
+  'Economics_Business': 'Economics',
+  'Diplomatic_International': 'Diplomatic',
+};
+const heatLookup = new Map<string, number>();
+for (const c of heatRaw) heatLookup.set(`${c.era}|${c.topic}`, c.count);
+let heatMax = 0;
+for (const e of eraOrder) for (const t of topicOrder) {
+  const v = heatLookup.get(`${e}|${t}`) || 0;
+  if (v > heatMax) heatMax = v;
+}
+if (heatMax === 0) heatMax = 1;
+function heatStyle(count: number) {
+  const ratio = count / heatMax;
+  const lightness = 92 - ratio * 66;
+  const dark = lightness < 55;
+  return `background:hsl(220, 38%, ${lightness.toFixed(1)}%);color:${dark ? '#fbf7ef' : '#10182a'};`;
+}
+
+// ---------------- Authors geography ---------------- //
+type StateRow = { state: string; count: number };
+type CountryRow = { country: string; count: number };
+const states: StateRow[] = (metrics.hometown_top_states || []).slice(0, 10);
+const countries: CountryRow[] = (metrics.hometown_top_countries || [])
+  .filter((c: CountryRow) => c.country !== 'USA' && c.country !== 'California')
+  .slice(0, 10);
+const stateMax = states.length ? Math.max(...states.map(s => s.count)) : 1;
+const countryMax = countries.length ? Math.max(...countries.map(c => c.count)) : 1;
+
+type School = { school: string; count: number; source_urls?: string[] };
+const schools: School[] = metrics.verified_schools || [];
+
+// ---------------- Examples ---------------- //
+type Essay = {
+  title: string; author: string; school: string; hometown?: string;
+  year: number; volume?: number; season?: string;
+  era: string; topic_primary: string; wayback_url: string;
+};
+const examples: Essay[] = (examplesData.essays || []).slice().sort((a: Essay, b: Essay) => {
+  return (a.year || 9999) - (b.year || 9999) || (a.title || '').localeCompare(b.title || '');
+});
+const eraShort: Record<string, string> = {
+  '20thCentury_pre1945': '20C pre-45',
+  '20thCentury_post1945': '20C post-45',
+  '19thCentury': '19th C',
+  '18thCentury': '18th C',
+  'EarlyModern': 'Early Mod',
+  'Medieval': 'Medieval',
+  'Classical': 'Classical',
+  'MultiEra': 'Multi-era',
+};
+const topicShort: Record<string, string> = {
+  'Politics_Government': 'Politics',
+  'Social_Cultural': 'Social',
+  'Military_War': 'Military',
+  'Economics_Business': 'Economics',
+  'Intellectual_Religious': 'Intellectual',
+  'Science_Technology': 'Science',
+  'Race_Ethnicity': 'Race',
+  'Gender': 'Gender',
+  'Legal_Constitutional': 'Legal',
+  'Diplomatic_International': 'Diplomatic',
+  'Unknown': 'Unknown',
+};
+
+const readinessItems = [
+  'Read at least two TCR issues cover to cover; can name a published essay whose argumentative move they admire.',
+  'Already comfortable with primary sources (ProQuest Historical Newspapers, National Archives, Library of Congress).',
+  'Has completed at least one prior 4,000-word researched paper.',
+  'Can hold a 6,000-word argument without thesis drift around word 3,500.',
+  'Has a teacher or counselor who can read drafts at register, not at "this is good for a high schooler."',
+  'Has fourteen weeks at ten to fifteen hours a week, on top of school, without wrecking junior fall.',
+];
 ---
 
 <BaseLayout>
   <!-- Hero -->
-  <section class="border-b border-ink-300/60">
-    <div class="mx-auto max-w-5xl px-6 py-16 md:py-24">
-      <p class="text-xs uppercase tracking-[0.25em] text-accent font-sans font-semibold">
-        Counselor intelligence brief
-      </p>
-      <h1 class="mt-4 font-display text-5xl md:text-7xl font-semibold tracking-tight text-ink-900">
-        The Concord Review
-      </h1>
-      <p class="mt-3 font-display italic text-xl md:text-2xl text-ink-500 max-w-prose">
-        Counselor Jay's intelligence brief on the most prestigious high-school history journal.
-      </p>
-      <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl">
-        <div class="border-l-2 border-accent pl-4">
-          <p class="font-display text-3xl md:text-4xl font-semibold text-ink-900 tabular-nums">{essaysTotal.toLocaleString('en-US')}</p>
-          <p class="text-xs uppercase tracking-wider text-ink-500 mt-1">Essays analyzed</p>
-        </div>
-        <div class="border-l-2 border-accent pl-4">
-          <p class="font-display text-3xl md:text-4xl font-semibold text-ink-900 tabular-nums">{issuesTotal}</p>
-          <p class="text-xs uppercase tracking-wider text-ink-500 mt-1">Issues, Vol 1 to 36</p>
-        </div>
-        <div class="border-l-2 border-accent pl-4">
-          <p class="font-display text-3xl md:text-4xl font-semibold text-ink-900 tabular-nums">{yearLow} to {yearHigh}</p>
-          <p class="text-xs uppercase tracking-wider text-ink-500 mt-1">Years covered</p>
-        </div>
-      </div>
-      <div class="mt-10 flex flex-wrap gap-3 text-sm font-sans">
-        <a href="#submission" class="inline-flex items-center rounded-md bg-accent px-5 py-2.5 text-white hover:bg-accent-dark">Read the brief</a>
-        <a href="#coach-note" class="inline-flex items-center rounded-md border border-accent text-accent-dark px-5 py-2.5 hover:bg-accent-soft">Coach's Note</a>
-      </div>
+  <section class="hero">
+    <h1>The Concord Review: Counselor Brief</h1>
+    <p class="lede">Counselor Jay's intelligence brief on the most prestigious high-school history journal. Submission mechanics, what gets published, what gets rejected, and a 14-week build calendar.</p>
+    <div class="badges">
+      <span class="badge"><span class="dot"></span>{essaysTotal.toLocaleString('en-US')} essays</span>
+      <span class="badge">{issuesTotal} issues</span>
+      <span class="badge">{yearLow} to {yearHigh}</span>
+      <span class="badge">5 era buckets · 12 region buckets</span>
+      <span class="badge">29 readable examples</span>
     </div>
   </section>
 
+  <!-- KPI strip -->
+  <div class="kpi-row">
+    <div class="kpi"><div class="num">{essaysTotal.toLocaleString('en-US')}</div><div class="label">Essays analyzed</div></div>
+    <div class="kpi"><div class="num">{issuesTotal}</div><div class="label">Issues, Vol 1 to 36</div></div>
+    <div class="kpi"><div class="num">~5%</div><div class="label">Acceptance rate</div></div>
+  </div>
+
   <!-- Section 1: Submission Intelligence -->
-  <section id="submission" class={sectionWrap}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 1</p>
-    <h2 class={`mt-2 ${h2Class}`}>Submission Intelligence</h2>
-    <div class={`mt-8 ${proseClass}`}>
-      <p>
-        The Concord Review (TCR) was founded in 1987 by Will Fitzhugh as the first quarterly journal in the world dedicated to publishing serious history research papers by secondary school students. It publishes four issues per year on a Spring, Summer, Fall, Winter cadence. The corpus we analyzed spans Volume 1 through Volume 36 and covers 142 published issues from 1988 through 2025.
-      </p>
-      <p class="font-semibold text-ink-900">Submission mechanics, generalized for HS applicants:</p>
-      <ul class="space-y-3 list-none pl-0">
-        <li><strong class="text-ink-900">Word range.</strong> 4,000 to 12,000 words, with the strongest published essays clustering in the 6,000 to 10,000 range. Plan for an over-shoot first draft, then trim.</li>
-        <li><strong class="text-ink-900">Citation style.</strong> Chicago Notes-Bibliography. Footnotes (or endnotes), full bibliography, no parenthetical / Author-Date.</li>
-        <li><strong class="text-ink-900">Fees.</strong> Author submission fee plus a publication fee on acceptance. Re-verify exact figures on the journal's current submission page before submitting, since both have moved over the journal's history.</li>
-        <li><strong class="text-ink-900">Cadence and response time.</strong> Rolling submission, with editorial review on a multi-month timeline tied to the next issue's production cycle. Acceptance rates hover near 5 percent. Rejected manuscripts can be revised and resubmitted, but the journal does not return substantive feedback on rejections, so the first submission needs to be the strongest one.</li>
-        <li><strong class="text-ink-900">Required components.</strong> Cover page (title, author, school, word count), the manuscript itself, footnotes, full bibliography. No abstract; the opening paragraph functions as one.</li>
-        <li><strong class="text-ink-900">Portal.</strong> Submission runs through TCR's online portal. Re-verify the URL and form requirements at submission time, since the portal has been updated multiple times since the journal's CMS migration.</li>
+  <section id="brief" class="block">
+    <div class="section-head">
+      <div><h2>Submission Intelligence</h2></div>
+      <p class="meta">Section 1 of 7 · 4,000 to 12,000 words · Chicago Notes-Bibliography</p>
+    </div>
+    <div class="prose">
+      <p>The Concord Review (TCR) was founded in 1987 by Will Fitzhugh as the first quarterly journal in the world dedicated to publishing serious history research papers by secondary school students. Four issues per year on a Spring, Summer, Fall, Winter cadence. The corpus we analyzed spans Volume 1 through Volume 36 and covers 142 published issues from 1988 through 2025.</p>
+      <p><strong>Submission mechanics, generalized for HS applicants:</strong></p>
+      <ul>
+        <li><strong>Word range.</strong> 4,000 to 12,000 words; strongest published essays cluster 6,000 to 10,000. Plan for an over-shoot first draft, then trim.</li>
+        <li><strong>Citation style.</strong> Chicago Notes-Bibliography. Footnotes (or endnotes), full bibliography, no parenthetical / Author-Date.</li>
+        <li><strong>Fees.</strong> Author submission fee plus a publication fee on acceptance. Re-verify exact figures on TCR's current submission page; both have moved over the journal's history.</li>
+        <li><strong>Cadence and response time.</strong> Rolling submission, multi-month editorial review tied to the next issue's production cycle. Acceptance rates hover near 5 percent. Rejected manuscripts can be revised and resubmitted, but the journal does not return substantive feedback on rejections, so the first submission needs to be the strongest one.</li>
+        <li><strong>Required components.</strong> Cover page (title, author, school, word count), manuscript, footnotes, full bibliography. No abstract; the opening paragraph functions as one.</li>
+        <li><strong>Portal.</strong> Submission runs through TCR's online portal. Re-verify URL and form requirements at submission time.</li>
       </ul>
-      <p class="border-l-2 border-accent pl-4 italic text-ink-900">
-        The 5 percent acceptance rate is the gating constraint. Everything else in this brief exists to help an applicant land in that 5 percent rather than the 95 percent.
-      </p>
+      <div class="callout">The 5 percent acceptance rate is the gating constraint. Everything else in this brief exists to help an applicant land in that 5 percent rather than the 95 percent.</div>
     </div>
   </section>
 
   <!-- Section 2: What TCR Publishes -->
-  <section id="publishes" class={`${sectionWrap} bg-paper-warm/40 border-y border-ink-300/60`}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 2</p>
-    <h2 class={`mt-2 ${h2Class}`}>What TCR Publishes</h2>
-    <p class={`mt-4 ${proseClass}`}>
-      The 1,597-essay corpus breaks down into a small number of legible patterns: a Northeast and Mid-Atlantic geographic spine, a 20th-century historical center of gravity, and a methodological preference for thematic and event-narrative argument over comparative or historiographical work.
-    </p>
+  <section id="publishes" class="block">
+    <div class="section-head">
+      <div><h2>What TCR Publishes</h2></div>
+      <p class="meta">Section 2 of 7 · 1,597 essays across 7 methodology buckets</p>
+    </div>
+    <p class="prose">The 1,597-essay corpus breaks down into a small number of legible patterns: a Northeast and Mid-Atlantic geographic spine, a 20th-century historical center of gravity, and a methodological preference for thematic and event-narrative argument over comparative or historiographical work.</p>
 
-    <!-- Distribution tables -->
-    <div class="mt-10 grid md:grid-cols-3 gap-6 font-sans text-sm">
-      <div class="rounded-lg border border-ink-300 bg-paper p-5">
-        <p class="text-xs uppercase tracking-wider text-ink-500">Era distribution, top 5</p>
-        <table class="mt-3 w-full">
-          <tbody class="divide-y divide-ink-300/60">
-            <tr><td class="py-1.5 text-ink-700">20th C, pre-1945</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">554</td></tr>
-            <tr><td class="py-1.5 text-ink-700">19th Century</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">391</td></tr>
-            <tr><td class="py-1.5 text-ink-700">20th C, post-1945</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">319</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Early Modern</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">87</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Medieval</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">47</td></tr>
-          </tbody>
+    <div class="dist-grid" style="margin-top: 14px;">
+      <div class="dist-card">
+        <h4>Era distribution, top 5</h4>
+        <table>
+          <tr><td>20th C, pre-1945</td><td>554</td></tr>
+          <tr><td>19th Century</td><td>391</td></tr>
+          <tr><td>20th C, post-1945</td><td>319</td></tr>
+          <tr><td>Early Modern</td><td>87</td></tr>
+          <tr><td>Medieval</td><td>47</td></tr>
         </table>
       </div>
-      <div class="rounded-lg border border-ink-300 bg-paper p-5">
-        <p class="text-xs uppercase tracking-wider text-ink-500">Region, top 5</p>
-        <table class="mt-3 w-full">
-          <tbody class="divide-y divide-ink-300/60">
-            <tr><td class="py-1.5 text-ink-700">North America</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">683</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Europe</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">351</td></tr>
-            <tr><td class="py-1.5 text-ink-700">East Asia</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">160</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Middle East</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">68</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Global</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">59</td></tr>
-          </tbody>
+      <div class="dist-card">
+        <h4>Region, top 5</h4>
+        <table>
+          <tr><td>North America</td><td>683</td></tr>
+          <tr><td>Europe</td><td>351</td></tr>
+          <tr><td>East Asia</td><td>160</td></tr>
+          <tr><td>Middle East</td><td>68</td></tr>
+          <tr><td>Global</td><td>59</td></tr>
         </table>
       </div>
-      <div class="rounded-lg border border-ink-300 bg-paper p-5">
-        <p class="text-xs uppercase tracking-wider text-ink-500">Methodology, full</p>
-        <table class="mt-3 w-full">
-          <tbody class="divide-y divide-ink-300/60">
-            <tr><td class="py-1.5 text-ink-700">Thematic</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">641</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Event Narrative</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">529</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Biographical</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">319</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Comparative</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">47</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Local Microhistory</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">34</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Unclear</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">25</td></tr>
-            <tr><td class="py-1.5 text-ink-700">Historiographical</td><td class="py-1.5 text-right font-display font-semibold tabular-nums">2</td></tr>
-          </tbody>
+      <div class="dist-card">
+        <h4>Methodology, full</h4>
+        <table>
+          <tr><td>Thematic</td><td>641</td></tr>
+          <tr><td>Event Narrative</td><td>529</td></tr>
+          <tr><td>Biographical</td><td>319</td></tr>
+          <tr><td>Comparative</td><td>47</td></tr>
+          <tr><td>Local Microhistory</td><td>34</td></tr>
+          <tr><td>Unclear</td><td>25</td></tr>
+          <tr><td>Historiographical</td><td>2</td></tr>
         </table>
       </div>
     </div>
 
-    <p class={`mt-10 ${proseClass}`}>
-      Three observations on methodology. Thematic and Event Narrative together account for roughly 73 percent of all essays, so a paper that builds an argument around a theme or that walks a single bounded event is operating in TCR's mainline. Biographical essays (single-figure portraits) are the next-largest mode at 20 percent. Comparative, microhistory, and explicit historiographical essays are rare, which is a signal about reader expectations rather than a prohibition.
-    </p>
+    <p class="prose" style="margin-top: 16px;">Three observations on methodology. Thematic and Event Narrative together account for roughly 73 percent of all essays, so a paper that builds an argument around a theme or that walks a single bounded event is operating in TCR's mainline. Biographical essays (single-figure portraits) are the next-largest mode at 20 percent. Comparative, microhistory, and explicit historiographical essays are rare, which is a signal about reader expectations rather than a prohibition.</p>
 
-    <TopicEraHeatmap />
-
-    <div class={proseClass}>
-      <h3 class={`${h3Class} mt-4`}>Spot-check titles, verbatim</h3>
-      <ul class="space-y-3 list-none pl-0">
-        <li><span class="text-ink-900 font-semibold">20th C pre-1945, Politics:</span> "Nationalism in South Africa" by Angela Pilgrim (1988); "Conscription 1916-1917" by Jane Allison Cooper (1988).</li>
-        <li><span class="text-ink-900 font-semibold">20th C pre-1945, Military:</span> "Spanish Civil War" by Bryan R. Olsen (1989); "Mau Mau Uprising" by Sherman C. Lo (1990).</li>
-        <li><span class="text-ink-900 font-semibold">20th C post-1945, Politics:</span> "Soviet Dissent" by Tania Lozansky (1989); "Glasnost" by Elizabeth Rudin (1989).</li>
-      </ul>
-      <p>
-        The titles confirm what the heatmap suggests. Bounded events with a clear documentary base, named institutions, and an ideologically legible frame.
-      </p>
+    <div class="heatmap">
+      <h3 style="margin-top: 18px;">Topic by era heatmap</h3>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            {topicOrder.map(t => <th>{topicLabels[t]}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {eraOrder.map(era => (
+            <tr>
+              <th class="row">{eraLabels[era]}</th>
+              {topicOrder.map(topic => {
+                const c = heatLookup.get(`${era}|${topic}`) || 0;
+                return <td style={heatStyle(c)} title={`${eraLabels[era]} x ${topicLabels[topic]}: ${c} essays`}>{c > 0 ? c : ''}</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="heatmap-note">Dominant cells sit on the 20th-century pre-1945 row. Politics and Military and War in that era together account for 269 essays, roughly 17 percent of the entire corpus. Consistent with the WWI / WWII document base accessible to HS researchers (statutes, congressional hearings, ProQuest Historical Newspapers, government archives).</p>
     </div>
+
+    <h3 style="margin-top: 18px;">Spot-check titles, verbatim</h3>
+    <ul class="spot-list">
+      <li><em>20C pre-45 / Politics:</em> "Nationalism in South Africa" by Angela Pilgrim (1988); "Conscription 1916-1917" by Jane Allison Cooper (1988).</li>
+      <li><em>20C pre-45 / Military:</em> "Spanish Civil War" by Bryan R. Olsen (1989); "Mau Mau Uprising" by Sherman C. Lo (1990).</li>
+      <li><em>20C post-45 / Politics:</em> "Soviet Dissent" by Tania Lozansky (1989); "Glasnost" by Elizabeth Rudin (1989).</li>
+    </ul>
   </section>
 
   <!-- Section 3: Where Authors Come From -->
-  <section id="authors" class={sectionWrap}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 3</p>
-    <h2 class={`mt-2 ${h2Class}`}>Where Authors Come From</h2>
-
-    <GeographyMap />
-
-    <div class={`mt-6 ${proseClass}`}>
-      <p>
-        <strong class="text-ink-900">Northeast US dominance.</strong> NY (196), MA (191), CT (68), NJ (64), and DC (64) together produce 583 essays, roughly 37 percent of the corpus. Add MD (47) and PA (42) and the Mid-Atlantic-plus-Northeast block reaches 672 essays, or 42 percent of all published work. California (143) is the only non-Northeast state in the top three, and its share is materially smaller than NY or MA on a per-capita-of-HS-population basis.
-      </p>
-      <p>
-        <strong class="text-ink-900">International presence is real but concentrated.</strong> Non-USA hometowns account for roughly 22 percent of the corpus. Canada is the largest non-US source at 77. The East Asia and Singapore / Hong Kong pipeline (China 31, Singapore 24, Hong Kong 12, Korea 12, South Korea 7, plus India 9) is visible and consistent with the East Asia regional topic distribution at 160 essays. International applicants who hit TCR's register are competitive.
-      </p>
+  <section id="authors" class="block">
+    <div class="section-head">
+      <div><h2>Where Authors Come From</h2></div>
+      <p class="meta">Section 3 of 7 · NY + MA + CT + NJ + DC = 37 percent of corpus</p>
     </div>
+    <p class="prose">Northeast US dominance. NY (196), MA (191), CT (68), NJ (64), DC (64) together produce 583 essays, roughly 37 percent of the corpus. Adding MD (47) and PA (42) brings the Mid-Atlantic-plus-Northeast block to 672 essays (42 percent). Non-USA hometowns account for roughly 22 percent of the corpus; Canada is the largest non-US source at 77, followed by an East Asia and Singapore / Hong Kong pipeline. International applicants who hit TCR's register are competitive.</p>
 
-    <VerifiedSchools />
+    <div class="authors-grid" style="margin-top: 14px;">
+      <div>
+        <h3>Top US states</h3>
+        <p class="note">Top 10, by published-author hometown.</p>
+        <ul class="bar-list">
+          {states.map(s => {
+            const pct = (s.count / stateMax) * 100;
+            return (
+              <li>
+                <span class="lbl">{s.state}</span>
+                <span class="bar"><span style={`width:${pct.toFixed(1)}%;`}></span></span>
+                <span class="num">{s.count}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div>
+        <h3>Top non-US countries</h3>
+        <p class="note">USA (1,255) excluded so the international tail is legible.</p>
+        <ul class="bar-list">
+          {countries.map(c => {
+            const pct = (c.count / countryMax) * 100;
+            return (
+              <li>
+                <span class="lbl">{c.country}</span>
+                <span class="bar accent"><span style={`width:${pct.toFixed(1)}%;`}></span></span>
+                <span class="num">{c.count}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div>
+        <h3>25 verified schools</h3>
+        <p class="note">Wayback-attested authors, pre-2010 sample-essay pages on tcr.org.</p>
+        <table class="school-table">
+          <thead>
+            <tr><th>School</th><th style="text-align:right;">Essays</th><th style="text-align:right;">Read</th></tr>
+          </thead>
+          <tbody>
+            {schools.map(s => {
+              const url = (s.source_urls && s.source_urls[0]) || '';
+              return (
+                <tr>
+                  <td>{s.school}</td>
+                  <td class="num">{s.count}</td>
+                  <td class="read">{url ? <a href={url} target="_blank" rel="noopener">Read ↗</a> : ''}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
   <!-- Section 4: What Gets Rejected -->
-  <section id="rejected" class={`${sectionWrap} bg-paper-warm/40 border-y border-ink-300/60`}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 4</p>
-    <h2 class={`mt-2 ${h2Class}`}>What Gets Rejected</h2>
-    <p class={`mt-6 ${proseClass} max-w-prose`}>
-      Rejection in TCR is rarely about topic choice. It is about how the writer handles thesis, evidence, and historiographical posture. Five recurring failure modes, generalized across topics:
-    </p>
+  <section id="rejected" class="block">
+    <div class="section-head">
+      <div><h2>What Gets Rejected</h2></div>
+      <p class="meta">Section 4 of 7 · five recurring failure modes</p>
+    </div>
+    <p class="prose">Rejection in TCR is rarely about topic choice. It is about how the writer handles thesis, evidence, and historiographical posture.</p>
 
-    <ol class="mt-8 space-y-8 max-w-prose list-none pl-0">
-      <li>
-        <h3 class={h3Class}>1. Treating the thesis as transparent fact.</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">The trap.</em> The writer states a claim ("the Reformation transformed Europe") as if it were settled, then describes evidence that supports it, never engaging the historiographical fact that the claim itself is contested.</p>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">How to avoid.</em> Treat every thesis as a claim that someone competent could reasonably dispute. State it as a position you are arguing for, mark the strongest counterargument, and dispatch it on evidentiary grounds. The reader should be able to identify, in the introduction, what the paper is arguing against.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>2. Collapsing groups, periods, or movements into one experience.</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">The trap.</em> Writing about "the Russian peasantry" or "Reconstruction-era freedmen" or "Edwardian women" as if those categories were homogeneous, when each contains regional, class, religious, and temporal divisions that drive the historical question.</p>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">How to avoid.</em> Specify the sub-population, the region, and the time window in the thesis. If the paper is about land redistribution, name which freedmen, where, and during which years. Pan-categorical claims read as either careless or as imported from a survey textbook.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>3. Presentism.</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">The trap.</em> Judging historical actors by 2026 frameworks without explanation, or projecting current categories onto historical material as if those categories were native to the period.</p>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">How to avoid.</em> Reconstruct the actors' own categories in their own moments. When invoking a contemporary analytic frame (intersectionality, hegemony, racial triangulation, settler colonialism), mark it explicitly as a later analytic frame applied to historical material. The frame is allowed; the silent conflation is not.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>4. Thin primary-source base.</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">The trap.</em> The bibliography is 90 percent secondary monographs, and the footnotes pull primary sources via the secondary citation chain rather than from the original document. The paper is effectively a book report on the secondary literature.</p>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">How to avoid.</em> Aim for a primary-to-secondary footnote ratio that is at least balanced and ideally primary-weighted by footnote count. Read the original document yourself when a secondary source quotes from it. ProQuest Historical Newspapers, the National Archives, the Library of Congress, JSTOR, and your school library's reference databases give direct primary access for most TCR-suitable topics.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>5. Thesis drift between sections.</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">The trap.</em> The introduction states a strong thesis. Section 1 supports it. By Section 4 the paper is describing background, by Section 6 it has become summary, and the thesis as such has disappeared into the content.</p>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed"><em class="text-ink-500">How to avoid.</em> Every section's opening paragraph should contain a sentence that names the thesis in that section's terms. In structural revision, physically locate the thesis sentence in every section. If you cannot find it, the section needs rewriting, not editing.</p>
-      </li>
-    </ol>
+    <div class="fail-grid" style="margin-top: 12px;">
+      <div class="fail-card">
+        <div class="name">1. Treating the thesis as transparent fact</div>
+        <p class="trap"><strong>Trap:</strong> the writer states a claim ("the Reformation transformed Europe") as settled, describes supporting evidence, never engages that the claim itself is contested.</p>
+        <p><strong>Fix:</strong> treat every thesis as a position someone competent could dispute. State it, name the strongest counterargument, dispatch it on evidentiary grounds. The introduction should make clear what the paper is arguing against.</p>
+      </div>
+      <div class="fail-card">
+        <div class="name">2. Collapsing groups, periods, or movements</div>
+        <p class="trap"><strong>Trap:</strong> writing about "the Russian peasantry" or "Edwardian women" as if those categories were homogeneous, when each contains regional, class, religious, and temporal divisions that drive the historical question.</p>
+        <p><strong>Fix:</strong> specify the sub-population, region, and time window in the thesis. Pan-categorical claims read as careless or imported from a survey textbook.</p>
+      </div>
+      <div class="fail-card">
+        <div class="name">3. Presentism</div>
+        <p class="trap"><strong>Trap:</strong> judging historical actors by 2026 frameworks without explanation, or projecting current categories onto historical material as if those categories were native to the period.</p>
+        <p><strong>Fix:</strong> reconstruct actors' own categories in their own moments. When invoking a contemporary analytic frame (intersectionality, hegemony, settler colonialism), mark it as a later frame applied to historical material.</p>
+      </div>
+      <div class="fail-card">
+        <div class="name">4. Thin primary-source base</div>
+        <p class="trap"><strong>Trap:</strong> the bibliography is 90 percent secondary monographs; footnotes pull primary sources via secondary citation chains rather than from the original document. The paper is effectively a book report on the secondary literature.</p>
+        <p><strong>Fix:</strong> aim for a primary-to-secondary footnote ratio that is balanced or primary-weighted. Read the original document yourself when a secondary quotes from it. ProQuest Historical Newspapers, National Archives, Library of Congress, JSTOR, and your school library cover most TCR-suitable topics.</p>
+      </div>
+      <div class="fail-card">
+        <div class="name">5. Thesis drift between sections</div>
+        <p class="trap"><strong>Trap:</strong> the introduction states a strong thesis. Section 1 supports it. By Section 4 the paper is describing background; by Section 6 it is summary, and the thesis has disappeared into the content.</p>
+        <p><strong>Fix:</strong> every section's opening paragraph should contain a sentence that names the thesis in that section's terms. Locate it physically; if you cannot find it, the section needs rewriting, not editing.</p>
+      </div>
+    </div>
   </section>
 
   <!-- Section 5: HS Workflow Timeline -->
-  <section id="timeline" class={sectionWrap}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 5</p>
-    <h2 class={`mt-2 ${h2Class}`}>HS Workflow Timeline</h2>
-    <p class={`mt-6 ${proseClass} max-w-prose`}>
-      A 14-week build to a TCR-quality manuscript, generalized from a recent client engagement. This assumes 10 to 15 hours per week of focused work alongside school.
-    </p>
-
-    <ol class="mt-8 space-y-7 max-w-prose list-none pl-0">
-      <li>
-        <h3 class={h3Class}>Weeks 1 to 2: Topic plus thesis development</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed">Triage secondary literature (introductions, conclusions, tables of contents). Build a working bibliography of 25 to 35 sources. Land on a thesis that is falsifiable, primary-source-supportable at HS level, and historiographically positioned. Avoid topics where the primary sources sit behind paywalls or in archives you cannot access.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>Weeks 3 to 5: Primary source acquisition</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed">Identify candidate primary sources, pull the actual articles, hearing transcripts, statutes, letters, and contemporaneous press. Channels to use: <strong class="text-ink-900">ProQuest Historical Newspapers</strong> (most major US dailies back to the 19th century), <strong class="text-ink-900">National Archives</strong> (federal records, congressional hearings, executive orders), <strong class="text-ink-900">Library of Congress</strong> (manuscripts, photographs, personal papers), <strong class="text-ink-900">JSTOR</strong> (scholarship plus some primary collections), and your school library's reference databases (your librarian can usually request material via interlibrary loan). Build a one-source-per-card system with full Chicago citation, page-numbered quotations, and your own marginal notes on how each source connects to the thesis.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>Weeks 6 to 9: Drafting</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed">Target 6,000 to 8,000 words on the first draft. Over-shooting and trimming is materially safer than under-shooting and inflating. Inflated drafts pad with hedge words, repeated argumentative claims, and quoted block quotes that should have been paraphrased; over-shot drafts trim cleanly because every cut sentence still leaves an argument behind. Draft footnotes live, not deferred; deferred footnotes generate the largest single source of TCR-disqualifying errors.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>Weeks 10 to 12: Peer review plus revision</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed">Bring in a counselor, a history teacher, and a writing center reader (or equivalent). Two passes: structural revision first (does every section serve the thesis?), then prose revision (sentence-level register, hedge-word elimination, voice consistency). Resist the urge to combine the two passes; structural and prose revision use different cognitive muscles, and combining them produces sloppy versions of both.</p>
-      </li>
-      <li>
-        <h3 class={h3Class}>Weeks 13 to 14: Final polish plus submission</h3>
-        <p class="mt-2 font-serif text-ink-700 leading-relaxed">Footnote audit. Every footnote verified against its source, every quote re-checked for accuracy and page number, bibliography cross-checked against citations. Read aloud pass. Cover page formatting. Word count check. Submit.</p>
-      </li>
-    </ol>
-
-    <div class="mt-12 max-w-prose rounded-lg border border-warn/40 bg-warn-soft/60 p-6 font-serif text-ink-700">
-      <h3 class="font-display text-xl font-semibold text-ink-900">Two highest-risk weeks</h3>
-      <p class="mt-3 leading-relaxed"><strong class="text-ink-900">Week 5: primary-source bottleneck.</strong> This is the week the project either has the documentary spine to support its thesis or it does not. If by end of Week 5 you are still relying on secondary summaries for your core evidence, the thesis may need to soften (acceptable) or the project may need to pivot to a topic with a more accessible primary base (also acceptable, much less acceptable in Week 9). Plan the Week 5 source review as a hard checkpoint with a counselor or history teacher.</p>
-      <p class="mt-3 leading-relaxed"><strong class="text-ink-900">Week 9: first complete draft confrontation.</strong> This is the week most TCR drafts fragment. The middle sections are where thesis drift sets in, where the writer loses confidence in the argument and slides into description, and where the section transitions stop carrying the argumentative load. If the paper is going to fall apart, it falls apart in Week 9. Plan a 90-minute structural review on the Week 9 weekend with a reader who has read the introduction and Section 1.</p>
+  <section id="timeline" class="block">
+    <div class="section-head">
+      <div><h2>HS Workflow Timeline</h2></div>
+      <p class="meta">Section 5 of 7 · 14 weeks · 10 to 15 hrs/week · risk weeks highlighted</p>
     </div>
+    <p class="prose">A 14-week build to a TCR-quality manuscript, generalized from a recent client engagement. Assumes 10 to 15 hours per week of focused work alongside school. Highlighted rows are the two highest-risk weeks: Week 5 (primary-source bottleneck) and Week 9 (first complete draft confrontation).</p>
+
+    <table class="timeline-table">
+      <thead>
+        <tr><th>Weeks</th><th>Phase</th><th>Key risk</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="weeks">1 to 2</td>
+          <td class="phase">Topic plus thesis development</td>
+          <td>Triage secondary lit, build a 25 to 35 source bibliography. Land on a thesis that is falsifiable, primary-supportable at HS level, historiographically positioned. Avoid topics where primary sources sit behind paywalls or in inaccessible archives.</td>
+        </tr>
+        <tr>
+          <td class="weeks">3 to 5</td>
+          <td class="phase">Primary source acquisition</td>
+          <td><strong>Risk peak (Week 5):</strong> the project either has the documentary spine to support its thesis or it does not. If still relying on secondary summaries by end of Week 5, soften the thesis or pivot the topic. Plan a hard checkpoint with a counselor or history teacher.</td>
+        </tr>
+        <tr class="risk">
+          <td class="weeks">5</td>
+          <td class="phase">Primary-source bottleneck checkpoint</td>
+          <td>Hard checkpoint. ProQuest Historical Newspapers, National Archives, Library of Congress, JSTOR, school library ILL. One source per card with full Chicago citation, page-numbered quotations, marginal notes connecting each to the thesis.</td>
+        </tr>
+        <tr>
+          <td class="weeks">6 to 9</td>
+          <td class="phase">Drafting</td>
+          <td>Target 6,000 to 8,000 words on first draft. Over-shoot then trim is safer than under-shoot then inflate. Inflated drafts pad with hedge words and block quotes. Draft footnotes live, not deferred; deferred footnotes generate the largest single source of TCR-disqualifying errors.</td>
+        </tr>
+        <tr class="risk">
+          <td class="weeks">9</td>
+          <td class="phase">First complete draft confrontation</td>
+          <td>Where most TCR drafts fragment. Middle sections lose thesis, slide into description, transitions stop carrying argumentative load. Plan a 90-minute structural review on the Week 9 weekend with a reader who has read the introduction and Section 1.</td>
+        </tr>
+        <tr>
+          <td class="weeks">10 to 12</td>
+          <td class="phase">Peer review plus revision</td>
+          <td>Counselor + history teacher + writing center reader. Two passes: structural (does every section serve the thesis?), then prose (sentence register, hedge-word elimination, voice consistency). Resist combining; structural and prose revision use different cognitive muscles.</td>
+        </tr>
+        <tr>
+          <td class="weeks">13 to 14</td>
+          <td class="phase">Final polish plus submission</td>
+          <td>Footnote audit (every footnote verified, every quote re-checked for accuracy and page number, bibliography cross-checked against citations). Read aloud pass. Cover page formatting. Word count check. Submit.</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <!-- Section 6: Voice and Register -->
-  <section id="voice" class={`${sectionWrap} bg-paper-warm/40 border-y border-ink-300/60`}>
-    <p class="text-xs uppercase tracking-[0.2em] text-accent font-sans font-semibold">Section 6</p>
-    <h2 class={`mt-2 ${h2Class}`}>Voice and Register</h2>
-    <p class={`mt-6 ${proseClass} max-w-prose`}>
-      TCR is reading for someone who can sustain a historiographically self-aware voice for 6,000+ words without sliding into school-essay register on one hand, or fake-academic register on the other. Third person, formal, no contractions, no rhetorical questions, no first person ("I argue," "we see"), and footnotes carry the citational and qualifying load so the prose can move.
-    </p>
-
-    <div class="mt-10 grid md:grid-cols-2 gap-8 max-w-5xl">
-      <div class="rounded-lg border border-ink-300 bg-paper p-6">
-        <p class="text-xs uppercase tracking-wider text-accent font-sans font-semibold">Right register</p>
-        <blockquote class="mt-3 font-display italic text-lg text-ink-900 leading-snug border-l-2 border-accent pl-4">
-          The 1882 Chinese Exclusion Act was not the origin of American anti-Asian racial law. It was the codification of a regional political economy that had been organizing California labor markets for two decades.
-        </blockquote>
-        <blockquote class="mt-4 font-display italic text-lg text-ink-900 leading-snug border-l-2 border-accent pl-4">
-          Pitt's wartime ministry survived the 1797 financial crisis less because of policy adjustment than because the political alternative had collapsed.
-        </blockquote>
-        <p class="mt-4 font-serif text-sm text-ink-700 leading-relaxed">
-          <strong class="text-ink-900">Why this works.</strong> Direct argumentative claims, asserted with confidence rather than hedged. Footnotes (not shown here) would carry the citational evidence. The prose makes a specific historiographical move (the act codified rather than originated; the ministry survived because of an absence rather than a positive action) that a reader can agree or disagree with.
-        </p>
+  <section id="voice" class="block">
+    <div class="section-head">
+      <div><h2>Voice and Register</h2></div>
+      <p class="meta">Section 6 of 7 · third person, formal, no contractions, no first person</p>
+    </div>
+    <div class="voice-grid">
+      <div class="voice-card right">
+        <h4><span>Right register</span></h4>
+        <blockquote>The 1882 Chinese Exclusion Act was not the origin of American anti-Asian racial law. It was the codification of a regional political economy that had been organizing California labor markets for two decades.</blockquote>
+        <p class="why">Direct argumentative claim, asserted not hedged. Makes a specific historiographical move (the act codified rather than originated) that a reader can agree or disagree with.</p>
+        <blockquote>Pitt's wartime ministry survived the 1797 financial crisis less because of policy adjustment than because the political alternative had collapsed.</blockquote>
+        <p class="why">Survival explained as the absence of a viable alternative, not as a positive policy. Footnotes (not shown) carry the citational evidence; the prose moves.</p>
       </div>
-      <div class="rounded-lg border border-ink-300 bg-paper p-6">
-        <p class="text-xs uppercase tracking-wider text-ink-500 font-sans font-semibold">Wrong register</p>
-        <blockquote class="mt-3 font-display italic text-lg text-ink-500 leading-snug border-l-2 border-ink-300 pl-4">
-          The Chinese Exclusion Act is a really important law that kind of shows how America was treating Chinese immigrants. As historians argue, it is a complicated topic.
-        </blockquote>
-        <blockquote class="mt-4 font-display italic text-lg text-ink-500 leading-snug border-l-2 border-ink-300 pl-4">
-          Pitt was maybe a successful prime minister, and there are a lot of reasons we could think about for why he stayed in power.
-        </blockquote>
-        <p class="mt-4 font-serif text-sm text-ink-700 leading-relaxed">
-          <strong class="text-ink-900">Why this fails.</strong> "Really important," "kind of," "maybe," "complicated," and "lots of reasons" are hedge stacks that retreat from any specific claim. "As historians argue" outsources the argumentative work to an unnamed authority rather than performing it. The sentences could describe almost any law and almost any prime minister, which means they describe nothing.
-        </p>
+      <div class="voice-card wrong">
+        <h4><span>Wrong register</span></h4>
+        <blockquote>The Chinese Exclusion Act is a really important law that kind of shows how America was treating Chinese immigrants. As historians argue, it is a complicated topic.</blockquote>
+        <p class="why">"Really important," "kind of," "complicated" are hedge stacks that retreat from any specific claim. "As historians argue" outsources the argumentative work to an unnamed authority.</p>
+        <blockquote>Pitt was maybe a successful prime minister, and there are a lot of reasons we could think about for why he stayed in power.</blockquote>
+        <p class="why">"Maybe," "lots of reasons" describe almost any law and almost any prime minister, which means they describe nothing.</p>
       </div>
     </div>
   </section>
 
-  <!-- Readiness Checklist + Coach's Note -->
-  <section id="readiness" class={sectionWrap}>
-    <ReadinessChecklist />
+  <!-- NEW Section: Examples -->
+  <section id="examples" class="block">
+    <div class="section-head">
+      <div><h2>Examples to read</h2></div>
+      <p class="meta">{examples.length} verified TCR essays · Wayback-preserved · 1988 to 1999</p>
+    </div>
+    <p class="prose">29 verified TCR essays preserved on the Wayback Machine. Real published essays from 1988 to 1999; TCR's CMS migration removed per-essay URLs after that. Reading two or three of these in full is the fastest way to internalize TCR's register, depth, and primary-source discipline.</p>
 
-    <article id="coach-note" class="my-12 max-w-3xl mx-auto rounded-xl border-l-4 border-navy bg-paper-warm/80 p-8 md:p-10 shadow-sm">
-      <p class="text-xs uppercase tracking-[0.25em] text-accent font-sans font-semibold">
-        Section 7
-      </p>
-      <h2 class="mt-2 font-display text-3xl md:text-4xl font-semibold tracking-tight text-ink-900">
-        Coach's Note
-      </h2>
-
-      <div class="mt-6 space-y-5 font-serif text-base md:text-[1.0625rem] leading-relaxed text-ink-900">
-        <p>
-          The numbers above describe a real journal with real preferences, and the band TCR publishes is visible from the data. Northeast and Mid-Atlantic students account for roughly 42 percent of the corpus. The East Asian, Singapore, and Hong Kong pipeline is the next-most-visible international lane, and the students who break through from those countries write at a register that would not be out of place at Phillips Academy or Hunter College HS. The methodology preference is not subtle either. Thematic, event-narrative, and biographical essays cover roughly 93 percent of what TCR has ever published. Comparative, microhistory, and historiographical work is rare to the point of absence (two historiographical essays in 1,597). Families walking into our office hoping to publish a "comparative study of revolutions" should know the journal has not historically been reading for that paper, no matter how good it is.
-        </p>
-        <p>
-          A TCR-ready HS student looks like this in practice. They have read at least two issues cover to cover and can name a published essay whose argumentative move they admire. They are already comfortable with primary sources, which usually means they have done a prior research paper drawing on ProQuest Historical Newspapers, the National Archives, or the Library of Congress. They can hold a 6,000-word argument in their head without thesis drift, which is harder than it sounds; most strong HS writers fragment around word 3,500 and slide into description. They have a teacher or counselor who has actually read the corresponding TCR issues and can read drafts at register, not at "this is good for a high schooler." And they have the calendar room for fourteen weeks at ten to fifteen hours a week, on top of school, without that schedule wrecking the rest of their junior fall.
-        </p>
-        <p>
-          When to wait. If a student is excited about history but has not yet written a 4,000-word researched paper, this is not the cycle. Build that capacity first on a school assignment or independent study, then come back. If a student's strongest interests are in science, the Journal of Emerging Investigators or the Regeneron pipeline is a better path; for arts and creative work, Polyphony Lit or Adroit. And if a family is shopping for a credential rather than supporting a student who genuinely wants to write 6,000 words on Reconstruction-era freedmen or the 1882 Chinese Exclusion Act, the project produces a flat manuscript that does not get in and a worn-out senior. Publication is one durable signal in a thoughtful college file, and it does not substitute for the rest of the application.
-        </p>
+    <div class="examples-table" style="margin-top: 14px;">
+      <div class="examples-header">
+        <span>Year</span><span>Title</span><span>Author</span><span>School</span><span>Topic</span><span>Era</span><span>Vol</span><span>Read</span>
       </div>
+      {examples.map(e => (
+        <div class="examples-row">
+          <span class="year">{e.year || '-'}</span>
+          <span class="title">{e.title}</span>
+          <span class="author">{e.author}</span>
+          <span class="school">{e.school}</span>
+          <span class="topic">{topicShort[e.topic_primary] || e.topic_primary}</span>
+          <span class="era">{eraShort[e.era] || e.era}</span>
+          <span class="length">{e.volume ? `Vol ${e.volume}` : ''}</span>
+          <a class="read" href={e.wayback_url} target="_blank" rel="noopener">Read ↗</a>
+        </div>
+      ))}
+    </div>
+    <p class="prose" style="margin-top: 14px; font-size: 13px; color: var(--muted);">For all TCR issues from 1988 to today (table of contents only; full essays paywalled), browse <a href="https://tcr.org" target="_blank" rel="noopener" style="color: var(--accent);">tcr.org</a>.</p>
+  </section>
 
-      <p class="mt-8 font-display italic text-base text-ink-500 text-right">
-        by Counselor Jay
-      </p>
-    </article>
+  <!-- Readiness checklist (compact, two-column) -->
+  <section id="readiness" class="block">
+    <div class="section-head">
+      <div><h2>TCR-ready check</h2></div>
+      <p class="meta">Six signs a student is ready this cycle</p>
+    </div>
+    <div class="checklist">
+      <p style="margin: 0 0 8px; font-size: 13px; color: #2c2f37;">Pulled directly from the Coach's Note. If a student can answer yes to all six, this is the cycle. If not, it is usually worth waiting.</p>
+      <ul>
+        {readinessItems.map(t => <li>{t}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Coach's Note -->
+  <section id="coach-note" class="block">
+    <div class="section-head">
+      <div><h2>Coach's Note</h2></div>
+      <p class="meta">Section 7 of 7 · by Counselor Jay</p>
+    </div>
+    <div class="coach-note">
+      <p>The numbers above describe a real journal with real preferences, and the band TCR publishes is visible from the data. Northeast and Mid-Atlantic students account for roughly 42 percent of the corpus. The East Asian, Singapore, and Hong Kong pipeline is the next-most-visible international lane, and the students who break through from those countries write at a register that would not be out of place at Phillips Academy or Hunter College HS. The methodology preference is not subtle either. Thematic, event-narrative, and biographical essays cover roughly 93 percent of what TCR has ever published. Comparative, microhistory, and historiographical work is rare to the point of absence (two historiographical essays in 1,597). Families walking into our office hoping to publish a "comparative study of revolutions" should know the journal has not historically been reading for that paper, no matter how good it is.</p>
+      <p>A TCR-ready HS student looks like this in practice. They have read at least two issues cover to cover and can name a published essay whose argumentative move they admire. They are already comfortable with primary sources, which usually means they have done a prior research paper drawing on ProQuest Historical Newspapers, the National Archives, or the Library of Congress. They can hold a 6,000-word argument in their head without thesis drift, which is harder than it sounds; most strong HS writers fragment around word 3,500 and slide into description. They have a teacher or counselor who has actually read the corresponding TCR issues and can read drafts at register, not at "this is good for a high schooler." And they have the calendar room for fourteen weeks at ten to fifteen hours a week, on top of school, without that schedule wrecking the rest of their junior fall.</p>
+      <p>When to wait. If a student is excited about history but has not yet written a 4,000-word researched paper, this is not the cycle. Build that capacity first on a school assignment or independent study, then come back. If a student's strongest interests are in science, the Journal of Emerging Investigators or the Regeneron pipeline is a better path; for arts and creative work, Polyphony Lit or Adroit. And if a family is shopping for a credential rather than supporting a student who genuinely wants to write 6,000 words on Reconstruction-era freedmen or the 1882 Chinese Exclusion Act, the project produces a flat manuscript that does not get in and a worn-out senior. Publication is one durable signal in a thoughtful college file, and it does not substitute for the rest of the application.</p>
+      <p class="sig">by Counselor Jay</p>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="block">
+    <div class="section-head">
+      <div><h2>About this brief</h2></div>
+      <p class="meta">Independent counselor brief · not affiliated with TCR</p>
+    </div>
+    <p class="about">Compiled from the public TCR archive at tcr.org plus Wayback Machine snapshots of TCR's pre-2010 sample-essay pages. The 1,597 essays span Volume 1 to Volume 36 (1988 to 2025). Era, region, methodology, and topic tags were assigned through a structured pass over titles, hometown geography, and where available, sample text. Always verify submission requirements and fees on TCR's own website at the moment of submission.</p>
   </section>
 </BaseLayout>
